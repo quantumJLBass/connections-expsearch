@@ -12,22 +12,39 @@ if (!class_exists('connectionsExpSearchLoad')) {
 	class connectionsExpSearchLoad {
 		
 		public function __construct() {
-			//if ( !is_admin() ) add_action( 'plugins_loaded', array(&$this, 'start') );
+			if ( !is_admin() ) add_action( 'plugins_loaded', array(&$this, 'start') );
 			//if ( !is_admin() ) add_action( 'wp_print_scripts', array(&$this, 'loadScripts') );
 		}
 		
 		public function start() {
 			add_filter('cn_list_atts_permitted', array(__CLASS__, 'expand_atts_permitted'));
+			
+			
+			add_action('cn_action_list_actions', array(__CLASS__, 'showList') );
+			add_action('cn_action_list_before', array(__CLASS__, 'beforeList') );
 		}
 		
-		public function expand_atts_permitted($permittedAtts){
+		public static function expand_atts_permitted($permittedAtts){
 			$permittedAtts['mode'] = NULL;
 			$permittedAtts['fields'] = NULL;
-			$permittedAtts['hide_empty'] = NULL;
+			$permittedAtts['hide_empty'] = True;
 			$permittedAtts['theme_file'] = NULL;
 			
 			return $permittedAtts;
 		}
+		
+		
+		public static function showList($atts){
+			$html = "just your friendly serach form";
+			return $html;
+		}
+		public static function beforeList($atts){
+			$html = "here at beforeList";//"just your friendly serach form";
+			return $html;
+		}				
+		
+		
+		
 		
 
 
