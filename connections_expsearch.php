@@ -25,7 +25,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			add_action('cn_action_list_before', array(__CLASS__, 'beforeList') );
 			
 			add_shortcode( 'connections_search', array( $this, 'shortcode') );
-			
+			require_once(dirname( __FILE__ ) . '/includes/class.template-parts-extended.php');//temp correct later
 			
 		}
 		
@@ -107,19 +107,45 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$convert->toBoolean($atts['notes']);
 			//$out .= var_dump($atts);
 
-
+			// switch out for a template that can be changed. ie: {$category_select}, {$state_dropdown} etc.
 			$out .= '<div id="cn-form-container">' . "\n";
+				$out .= '<div id="cn-form-ajax-response"><ul></ul></div>' . "\n";
+				$out .= '<form id="cn-form" method="POST" enctype="multipart/form-data">' . "\n";
+	
+					$defaults = array(
+						'show_label' => TRUE
+					);
+			
+					$atts = wp_parse_args( $atts, $defaults );	
+					$searchValue = ( get_query_var('cn-s') ) ? get_query_var('cn-s') : '';
+					$out .= cnTemplatePartExended::test();//test for now.. where state will be
+					$out .= cnTemplatePart::category( array(
+						'type'            => 'select',
+						'group'           => FALSE,
+						'default'         => __('Select Category', 'connections'),
+						'show_select_all' => TRUE,
+						'select_all'      => __('Show All Categories', 'connections'),
+						'show_empty'      => TRUE,
+						'show_count'      => FALSE,
+						'depth'           => 0,
+						'parent_id'       => array(),
+						'exclude'         => array(),
+						'return'          => FALSE,
+					) );
 
-			$out .= '<div id="cn-form-ajax-response"><ul></ul></div>' . "\n";
 
-			$out .= '<form id="cn-form" method="POST" enctype="multipart/form-data">' . "\n";
+					$out .= '<span class="cn-search">';
+						if ( $atts['show_label'] ) $out .= '<label for="cn-s">Search Directory</label>';
+						$out .= '<input type="text" id="cn-search-input" name="cn-s" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
+						$out .= '<input type="submit" name="" id="cn-search-submit" class="cn-search-button" value="" tabindex="-1" />';
+					$out .= '</span>';
 
-
-			$out .=  '<p class="cn-add"><input class="cn-button-shell cn-button green" id="cn-form-submit-new" type="submit" name="save" value="' . __('Submit' , 'connections_form' ) . '" /></p>' . "\n";
-
-			$out .= '</form>';
+					$out .=  '<p class="cn-add"><input class="cn-button-shell cn-button green" id="cn-form-submit-new" type="submit" name="save" value="' . __('Submit' , 'connections_form' ) . '" /></p>' . "\n";
+	
+				$out .= '</form>';
 			$out .= '</div>';
 
+			// Output the the search input.
 			return $out;
 		}		
 		
