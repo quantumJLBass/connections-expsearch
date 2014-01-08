@@ -66,6 +66,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$atts = shortcode_atts(
 				array(
 					'default_type'     => 'individual',
+					'show_label'		=> TRUE,
 					'select_type'      => TRUE,
 					'photo'            => FALSE,
 					'logo'             => FALSE,
@@ -118,8 +119,8 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			
 					$atts = wp_parse_args( $atts, $defaults );	
 					$searchValue = ( get_query_var('cn-s') ) ? get_query_var('cn-s') : '';
-					$out .= cnTemplatePartExended::test();//test for now.. where state will be
-					$out .= cnTemplatePart::category( array(
+
+					$out .= cnTemplatePartExended::flexSelect(array(
 						'type'            => 'select',
 						'group'           => FALSE,
 						'default'         => __('Select Category', 'connections'),
@@ -131,8 +132,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 						'parent_id'       => array(),
 						'exclude'         => array(),
 						'return'          => FALSE,
-					) );
-
+					));
 
 					$out .= '<span class="cn-search">';
 						if ( $atts['show_label'] ) $out .= '<label for="cn-s">Search Directory</label>';
