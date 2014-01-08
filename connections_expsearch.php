@@ -25,11 +25,11 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			
 			add_action( 'wp_print_styles', array( $this, 'loadStyles' ) );
 			
-			if (isset($_POST)) {
-				if (isset($_POST['start_search'])) {// Check if option save is performed
-					add_filter('the_content', array( $this, 'doSearch' ));
-				}
-			}	
+			
+			if (isset($_POST['start_search'])) {// Check if option save is performed
+				add_filter('the_content', array( $this, 'doSearch' ));
+			}
+				
 		
 			
 		}
@@ -62,8 +62,47 @@ if (!class_exists('connectionsExpSearchLoad')) {
 
 		public function doSearch() {
 			global $post,$connections;
-			var_dump($_POST);
-			$out='<p>the results</p>';
+			$permittedAtts = array(
+				'id'                    => NULL,
+				'slug'                  => NULL,
+				'category'              => isset($_POST['cn-cat'])&& !empty($_POST['cn-cat']) ?$_POST['cn-cat']:NULL,
+				/*'category_in'           => NULL,
+				'exclude_category'      => NULL,
+				'category_name'         => NULL,
+				'category_slug'         => NULL,
+				'wp_current_category'   => 'false',
+				'allow_public_override' => 'false',
+				'private_override'      => 'false',
+				'show_alphaindex'       => cnSettingsAPI::get( 'connections', 'connections_display_results', 'index' ),
+				'repeat_alphaindex'     => cnSettingsAPI::get( 'connections', 'connections_display_results', 'index_repeat' ),
+				'show_alphahead'        => cnSettingsAPI::get( 'connections', 'connections_display_results', 'show_current_character' ),
+				'list_type'             => NULL,
+				'order_by'              => NULL,
+				'limit'                 => NULL,
+				'offset'                => NULL,
+				'family_name'           => NULL,
+				'last_name'             => NULL,
+				'title'                 => NULL,*/
+				'organization'          => isset($_POST['cn-keyword']) && !empty($_POST['cn-keyword'])?$_POST['cn-keyword']:NULL,
+				'department'            => NULL,
+				'city'                  => NULL,
+				'state'                 => isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state']:NULL,
+				/*'zip_code'              => NULL,*/
+				'country'               => isset($_POST['cn-country']) && !empty($_POST['cn-country'])?$_POST['cn-country']:NULL,
+				/*'near_addr'             => NULL,
+				'latitude'              => NULL,
+				'longitude'             => NULL,
+				'radius'                => 10,
+				'unit'                  => 'mi',*/
+				'template'              => NULL, /* @since version 0.7.1.0 */
+				'template_name'         => NULL, /* @deprecated since version 0.7.0.4 */
+				'width'                 => NULL,
+				'lock'                  => FALSE,
+				'force_home'            => FALSE,
+				'home_id'               => in_the_loop() && is_page() ? get_the_id() : cnSettingsAPI::get( 'connections', 'connections_home_page', 'page_id' ),
+			);
+			$out= connectionsList( $permittedAtts, $content = NULL, $tag = 'connections' );
+			
 			return $out;
 		}
 		
