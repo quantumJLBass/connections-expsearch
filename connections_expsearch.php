@@ -19,12 +19,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		
 		public function start() {
 			add_filter('cn_list_atts_permitted', array(__CLASS__, 'expand_atts_permitted'));
-			
-			
-			add_action('cn_action_list_actions', array(__CLASS__, 'showList') );
-			
-			add_action('cn_action_list_before', array(__CLASS__, 'beforeList') );
-			
+
 			add_shortcode( 'connections_search', array( $this, 'shortcode') );
 			require_once(dirname( __FILE__ ) . '/includes/class.template-parts-extended.php');//temp correct later
 			
@@ -64,16 +59,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			
 			return $permittedAtts;
 		}
-		
-		
-		public static function showList($atts){
-			$html = "just your friendly serach form";
-			return $html;
-		}
-		public static function beforeList($atts){
-			$html = "here at beforeList";//"just your friendly serach form";
-			return $html;
-		}
+
 		public function doSearch() {
 			global $post,$connections;
 			var_dump($_POST);
