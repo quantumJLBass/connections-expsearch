@@ -30,6 +30,13 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			
 			add_action( 'wp_print_styles', array( $this, 'loadStyles' ) );
 			
+			if (isset($_POST)) {
+				if (isset($_POST['start_search'])) {// Check if option save is performed
+					add_filter('the_content', array( $this, 'doSearch' ));
+				}
+			}	
+		
+			
 		}
 		private function loadConstants() {
 
@@ -67,14 +74,20 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$html = "here at beforeList";//"just your friendly serach form";
 			return $html;
 		}
+		public function doSearch() {
+			global $post,$connections;
+			$out='<p>the results</p>';
+			return $out;
+		}
 		
+		
+		
+				
 		/**
 		 * @todo: Add honeypot fields for bots.
 		 */
 		public function shortcode( $atts , $content = NULL ) {
 			global $connections;
-
-			
 
 			$date = new cnDate();
 			$form = new cnFormObjects();
@@ -177,7 +190,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 						$out .= '<input type="text" id="cn-search-input" name="cn-s" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
 					$out .= '</span>';
 
-					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="save" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
+					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="start_search" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
 	
 				$out .= '</form>';
 			$out .= '</div>';
@@ -186,6 +199,8 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			return $out;
 		}		
 		
+
+
 		
 
 
