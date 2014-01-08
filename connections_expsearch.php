@@ -12,6 +12,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 	class connectionsExpSearchLoad {
 		
 		public function __construct() {
+			$this->loadConstants();
 			if ( !is_admin() ) add_action( 'plugins_loaded', array(&$this, 'start') );
 			//if ( !is_admin() ) add_action( 'wp_print_scripts', array(&$this, 'loadScripts') );
 		}
@@ -27,8 +28,27 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			add_shortcode( 'connections_search', array( $this, 'shortcode') );
 			require_once(dirname( __FILE__ ) . '/includes/class.template-parts-extended.php');//temp correct later
 			
+			add_action( 'wp_print_styles', array( $this, 'loadStyles' ) );
+			
 		}
-		
+		private function loadConstants() {
+
+			define( 'CNEXSCH_CURRENT_VERSION', '1.0.2' );
+
+			define( 'CNEXSCH_DIR_NAME', plugin_basename( dirname( __FILE__ ) ) );
+			define( 'CNEXSCH_BASE_NAME', plugin_basename( __FILE__ ) );
+			define( 'CNEXSCH_BASE_PATH', plugin_dir_path( __FILE__ ) );
+			define( 'CNEXSCH_BASE_URL', plugin_dir_url( __FILE__ ) );
+		}
+
+		/**
+		 * Called when running the wp_print_styles action.
+		 *
+		 * @return null
+		 */
+		public function loadStyles() {
+			if ( ! is_admin() ) wp_enqueue_style('cn-expsearch', CNEXSCH_BASE_URL . '/css/cn-expsearch.css', array(), CNEXSCH_CURRENT_VERSION);
+		}		
 		public static function expand_atts_permitted($permittedAtts){
 			$permittedAtts['mode'] = NULL;
 			$permittedAtts['fields'] = NULL;
@@ -111,7 +131,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			// switch out for a template that can be changed. ie: {$category_select}, {$state_dropdown} etc.
 			$out .= '<div id="cn-form-container">' . "\n";
 				$out .= '<div id="cn-form-ajax-response"><ul></ul></div>' . "\n";
-				$out .= '<form id="cn-form" method="POST" enctype="multipart/form-data">' . "\n";
+				$out .= '<form id="cn-search-form" method="POST" enctype="multipart/form-data">' . "\n";
 	
 					$defaults = array(
 						'show_label' => TRUE
@@ -157,7 +177,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 						$out .= '<input type="text" id="cn-search-input" name="cn-s" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
 					$out .= '</span>';
 
-					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-submit-new" type="submit" name="save" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
+					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="save" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
 	
 				$out .= '</form>';
 			$out .= '</div>';
