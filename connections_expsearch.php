@@ -76,6 +76,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		}
 		public function doSearch() {
 			global $post,$connections;
+			var_dump($_POST);
 			$out='<p>the results</p>';
 			return $out;
 		}
@@ -175,7 +176,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 
 					$out 			.= '<label class="search-select"><strong>Search by state:</strong></label><br/>';
 					$display_code 	= $connections->settings->get('connections_form', 'connections_form_preferences', 'form_preference_regions_display_code');
-					$out          	.= '<select name="state">';
+					$out          	.= '<select name="cn-state">';
 					$out 			.= '<option value="" selected >Any</option>';
 					foreach (cnDefaultValues::getRegions() as $code => $regions) {
 						$lable = $display_code ? $code : $regions;
@@ -187,7 +188,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					
 					$out .= '<label for="cn-s"><strong>Keywords:</strong></label><br/>';
 					$out .= '<span class="cn-search" style="width:50%; display:inline-block">';
-						$out .= '<input type="text" id="cn-search-input" name="cn-s" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
+						$out .= '<input type="text" id="cn-search-input" name="cn-keyword" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
 					$out .= '</span>';
 
 					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="start_search" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
