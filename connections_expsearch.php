@@ -139,21 +139,16 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					$out .= '<hr/></div>';
 
 					$out .= '<div>';
-					$out .= cnTemplatePartExended::flexSelect($connections->retrieve->categories(),array(
-						'type'            => 'select',
-						'group'           => FALSE,
-						'default'         => __('Select state', 'connections'),
-						'label'           => __('Search by state', 'connections'),
-						'show_select_all' => TRUE,
-						'select_all'      => __('Any', 'connections'),
-						'show_empty'      => TRUE,
-						'show_count'      => FALSE,
-						'depth'           => 0,
-						'parent_id'       => array(),
-						'exclude'         => array(),
-						'return'          => TRUE,
-						'class'				=>'search-select'
-					));
+
+					$out 			.= '<label class="search-select"><strong>Search by state:</strong></label><br/>';
+					$display_code 	= $connections->settings->get('connections_form', 'connections_form_preferences', 'form_preference_regions_display_code');
+					$out          	.= '<select name="state">';
+					$out 			.= '<option value="" selected >Any</option>';
+					foreach (cnDefaultValues::getRegions() as $code => $regions) {
+						$lable = $display_code ? $code : $regions;
+						$out .= '<option value="' . $code . '" >' . $lable . '</option>';
+					}
+					$out .= '</select>';
 					$out .= '<hr/></div>';
 
 					
