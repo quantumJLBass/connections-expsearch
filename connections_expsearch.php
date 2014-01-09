@@ -66,6 +66,8 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'id'                    => NULL,
 				'slug'                  => NULL,
 				'category'              => isset($_POST['cn-cat'])&& !empty($_POST['cn-cat']) ?$_POST['cn-cat']:NULL,
+				'enable_category_select'	=>false,
+				'enable_search'			=> false,
 				/*'category_in'           => NULL,
 				'exclude_category'      => NULL,
 				'category_name'         => NULL,
@@ -99,7 +101,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'width'                 => NULL,
 				'lock'                  => FALSE,
 				'force_home'            => FALSE,
-				'search_terms'  		=> isset($_POST['cn-keyword']) && !empty($_POST['cn-keyword'])?$_POST['cn-keyword']:array(),
+				'search_terms'  		=> isset($_POST['cn-keyword']) && !empty($_POST['cn-keyword'])?explode(' ',$_POST['cn-keyword']):array(),
 				'home_id'               => in_the_loop() && is_page() ? get_the_id() : cnSettingsAPI::get( 'connections', 'connections_home_page', 'page_id' ),
 			);
 			$out= connectionsList( $permittedAtts, $content = NULL, $tag = 'connections' );
