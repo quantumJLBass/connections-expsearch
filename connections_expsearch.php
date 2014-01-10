@@ -13,9 +13,9 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		
 		public function __construct() {
 			$this->loadConstants();
-			if ( !is_admin() ) add_action( 'plugins_loaded', array(&$this, 'start') );
+			if ( !is_admin() ) add_action( 'plugins_loaded', array($this, 'start') );
 			//if ( !is_admin() ) add_action( 'wp_print_scripts', array(&$this, 'loadScripts') );
-			if ( !is_admin() ) add_action( 'wp_js_scripts', array(&$this, 'loadJs') );
+			
 		}
 		
 		public function start() {
@@ -25,7 +25,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			require_once(dirname( __FILE__ ) . '/includes/class.template-parts-extended.php');//temp correct later
 			
 			add_action( 'wp_print_styles', array( $this, 'loadStyles' ) );
-			
+			add_action( 'init', array($this, 'loadJs') );
 			
 			if (isset($_POST['start_search'])) {// Check if option save is performed
 				add_filter('the_content', array( $this, 'doSearch' ));
@@ -50,7 +50,8 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		 * @return null
 		 */
 		public function loadStyles() {
-			if ( ! is_admin() ) wp_enqueue_style('cn-expsearch', CNEXSCH_BASE_URL . '/css/cn-expsearch.css', array(), CNEXSCH_CURRENT_VERSION);
+			if ( ! is_admin() ) wp_enqueue_style('cn-expsearch', CNEXSCH_BASE_URL . 'css/cn-expsearch.css', array(), CNEXSCH_CURRENT_VERSION);
+			
 		}		
 		public static function expand_atts_permitted($permittedAtts){
 			$permittedAtts['mode'] = NULL;
@@ -62,8 +63,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		}
 
 		public function loadJs(){
-			if ( ! is_admin() )wp_enqueue_script( 'cn-form-ui-user' , CNEXSCH_BASE_URL . 'js/cn-expsearch.js', array('jquery') , CNEXSCH_CURRENT_VERSION , TRUE );	
-			
+			if ( ! is_admin() )wp_enqueue_script( 'cn-expsearch' , CNEXSCH_BASE_URL . 'js/cn-expsearch.js', array('jquery') , CNEXSCH_CURRENT_VERSION , TRUE );
 		}
 
 
@@ -142,12 +142,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$format =& $convert;
 			$entry = new cnEntry();
 			$out = '';
-			$out .= '<h2><a id="mylocation" style="" hidefocus="true" href="#">Search near my location</a></h2>';
-			$out .= '<input type="hidden" name="cn-near_addr" />';
-			$out .= '<input type="hidden" name="cn-latitude" />';
-			$out .= '<input type="hidden" name="cn-longitude" />';
-			$out .= '<input type="hidden" name="cn-radius" value="10" />';
-			$out .= '<input type="hidden" name="cn-unit" value="mi" />';
+
 
 			
 			
@@ -243,6 +238,15 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					$out .= '<label for="cn-s"><strong>Keywords:</strong></label><br/>';
 					$out .= '<span class="cn-search" style="width:50%; display:inline-block">';
 						$out .= '<input type="text" id="cn-search-input" name="cn-keyword" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
+
+			$out .= '<h2 ><a id="mylocation" style="" class="button" hidefocus="true" href="#">Search near my location</a></h2>';
+			$out .= '<input type="hidden" name="cn-near_addr" />';
+			$out .= '<input type="hidden" name="cn-latitude" />';
+			$out .= '<input type="hidden" name="cn-longitude" />';
+			$out .= '<input type="hidden" name="cn-radius" value="10" />';
+			$out .= '<input type="hidden" name="cn-unit" value="mi" />';
+
+
 					$out .= '</span>';
 
 					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="start_search" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
