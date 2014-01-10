@@ -142,6 +142,26 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			';
 			
 			
+			$results = $connections->retrieve->entries( $permittedAtts );
+			
+			$markers = new stdClass();
+			$markers->markers=array();
+			foreach($results as $entry){
+				$entryObj=new stdClass();
+				$entryObj->id=$entry->id;
+				$entryObj->title= $entry->organization;
+				$entryObj->position=new stdClass();
+				$addy = unserialize ($entry->addresses);
+				$array = (array) $addy;
+				$addy = array_pop($addy);
+				if(!empty($addy['latitude']) && !empty($addy['longitude'])){
+					$entryObj->position->latitude=$addy['latitude'];
+					$entryObj->position->longitude=$addy['longitude'];
+					$markers->markers[]= $entryObj;
+				}
+			}
+			
+			$markerJson=json_encode($markers);
 			
 				if($permittedAtts['category']==NULL){
 					$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
@@ -161,15 +181,15 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					$category = $connections->retrieve->category($permittedAtts['category']);
 					$out .= '<h3>'.$state.$category->name.'</h3>';
 					$out .= '<div class="accordion">';
-					$out .= connectionsList( $permittedAtts, $content = NULL, $tag = 'connections' );
+					$out .= connectionsList( $permittedAtts,NULL,'connections' );
 					$out .= '</div>';
 				}
-			
+
 			$out .='
 			</div>
 			<div id="tabs-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom ">
 				<h2>Hover on a point to find a business and click for more information</h2>
-			<div id="mapJson"></div>
+			<div id="mapJson">'.$markerJson.'</div>
 			<div id="front_cbn_map" class="byState " rel="'.$_POST['cn-state'].'" style="width:100%;height:450px;"></div>
 			<div class="ui-widget-content ui-corner-bottom" style="padding:5px 15px;"><div id="data_display"></div><div style="clear:both;"></div></div>
 			</div>
