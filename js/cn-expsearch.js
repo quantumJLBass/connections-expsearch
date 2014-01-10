@@ -30,23 +30,26 @@ jQuery(document).ready(function ($) {
 	function showError(error) {
 	  switch(error.code) {
 		case error.PERMISSION_DENIED:
-		  x.innerHTML="User denied the request for Geolocation."
+		  $('#mylocation').closest('h2').html("User denied the request for Geolocation.");
 		  break;
 		case error.POSITION_UNAVAILABLE:
-		  x.innerHTML="Location information is unavailable."
+		  $('#mylocation').closest('h2').html("Location information is unavailable.");
 		  break;
 		case error.TIMEOUT:
-		  x.innerHTML="The request to get user location timed out."
+		  $('#mylocation').closest('h2').html("The request to get user location timed out.");
 		  break;
 		case error.UNKNOWN_ERROR:
-		  x.innerHTML="An unknown error occurred."
+		  $('#mylocation').closest('h2').html("An unknown error occurred.");
 		  break;
 		}
-	}	
-	$('#mylocation').on('click',function(e){
-		//alert();
-		e.preventDefault();
-		getLocation();
-		
-	});	
+	}
+	if( $('html').is($('.geolocation '))){
+		$('#mylocation').on('click',function(e){
+			//alert();
+			e.preventDefault();
+			getLocation();
+		});	
+	}else{
+		$('#mylocation').closest('h2').remove();
+	}
 });
