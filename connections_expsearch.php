@@ -101,11 +101,6 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'state'                 => isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state']:NULL,
 				/*'zip_code'              => NULL,*/
 				'country'               => isset($_POST['cn-country']) && !empty($_POST['cn-country'])?$_POST['cn-country']:NULL,
-				/*'near_addr'             => NULL,
-				'latitude'              => NULL,
-				'longitude'             => NULL,
-				'radius'                => 10,
-				'unit'                  => 'mi',*/
 				'template'              => NULL, /* @since version 0.7.1.0 */
 				'template_name'         => NULL, /* @deprecated since version 0.7.0.4 */
 				'width'                 => NULL,
@@ -114,6 +109,19 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'search_terms'  		=> isset($_POST['cn-keyword']) && !empty($_POST['cn-keyword'])?explode(' ',$_POST['cn-keyword']):array(),
 				'home_id'               => in_the_loop() && is_page() ? get_the_id() : cnSettingsAPI::get( 'connections', 'connections_home_page', 'page_id' ),
 			);
+			
+			if( (isset($_POST['cn-latitude']) && isset($_POST['cn-longitude'])) || (isset($_POST['cn-near_addr'])) ){
+				$locationalPermittedAtts = array(
+					'near_addr'		=> isset($_POST['cn-near_addr']) && !empty($_POST['cn-near_addr'])?"":NULL,
+					'latitude'		=> isset($_POST['cn-latitude']) && !empty($_POST['cn-latitude'])?"":NULL,
+					'longitude'		=> isset($_POST['cn-longitude']) && !empty($_POST['cn-longitude'])?"":NULL,
+					'radius'		=> isset($_POST['cn-near_addr']) && !empty($_POST['cn-near_addr'])?"":10,
+					'unit'			=> isset($_POST['cn-near_addr']) && !empty($_POST['cn-near_addr'])?"":'mi',
+				);
+				$permittedAtts = array_merge($permittedAtts,$locationalPermittedAtts);
+			}
+			
+			
 			$out= connectionsList( $permittedAtts, $content = NULL, $tag = 'connections' );
 			
 			return $out;
@@ -135,6 +143,14 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$entry = new cnEntry();
 			$out = '';
 			$out .= '<h2><a id="mylocation" style="" hidefocus="true" href="#">Search near my location</a></h2>';
+			$out .= '<input type="hidden" name="cn-near_addr" />';
+			$out .= '<input type="hidden" name="cn-latitude" />';
+			$out .= '<input type="hidden" name="cn-longitude" />';
+			$out .= '<input type="hidden" name="cn-radius" value="10" />';
+			$out .= '<input type="hidden" name="cn-unit" value="mi" />';
+
+			
+			
 			$atts = shortcode_atts(
 				array(
 					'default_type'     => 'individual',
