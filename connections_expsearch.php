@@ -95,6 +95,9 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'family_name'           => NULL,
 				'last_name'             => NULL,
 				'title'                 => NULL,*/
+				'show_alphaindex'       => false,
+				'repeat_alphaindex'     => false,
+				'show_alphahead'       	=> false,
 				'organization'          => isset($_POST['cn-keyword']) && !empty($_POST['cn-keyword'])?$_POST['cn-keyword']:NULL,
 				'department'            => NULL,
 				'city'                  => NULL,
@@ -121,8 +124,34 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				$permittedAtts = array_merge($permittedAtts,$locationalPermittedAtts);
 			}
 			
+			$out = '';
+			$categories = $connections->retrieve->categories();
+			$opSortbyCat=true;//would be an option
 			
-			$out= connectionsList( $permittedAtts, $content = NULL, $tag = 'connections' );
+			//var_dump($categories);
+			//die();
+			if($permittedAtts['category']==NULL){
+
+				$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
+				foreach($categories as $cat){
+					$permittedAtts['category']=$cat->term_id;
+					$catblock = connectionsList( $permittedAtts, $content = NULL, $tag = 'connections' );;
+					//var_dump($catblock);
+					if(!empty($catblock) && strpos($catblock,'No results')===false){
+						$out .= '<h3>'.$state.$cat->name.'</h3>';
+						$out .= '<div class="accordion">';
+						$out .= $catblock;
+						$out .= '</div>';
+					}
+				}
+			}else{
+				$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
+				$category = $connections->retrieve->category($permittedAtts['category']);
+				$out .= '<h3>'.$state.$category->name.'</h3>';
+				$out .= '<div class="accordion">';
+				$out .= connectionsList( $permittedAtts, $content = NULL, $tag = 'connections' );
+				$out .= '</div>';
+			}
 			
 			return $out;
 		}
@@ -238,17 +267,14 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					$out .= '<label for="cn-s"><strong>Keywords:</strong></label><br/>';
 					$out .= '<span class="cn-search" style="width:50%; display:inline-block">';
 						$out .= '<input type="text" id="cn-search-input" name="cn-keyword" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
-
-			$out .= '<h2 ><a id="mylocation" style="" class="button" hidefocus="true" href="#">Search near my location</a></h2>';
-			$out .= '<input type="hidden" name="cn-near_addr" />';
-			$out .= '<input type="hidden" name="cn-latitude" />';
-			$out .= '<input type="hidden" name="cn-longitude" />';
-			$out .= '<input type="hidden" name="cn-radius" value="10" />';
-			$out .= '<input type="hidden" name="cn-unit" value="mi" />';
-
-
 					$out .= '</span>';
 
+					$out .= '<h2 ><a id="mylocation" style="" class="button" hidefocus="true" href="#">Search near my location</a></h2>';
+					$out .= '<input type="hidden" name="cn-near_addr" />';
+					$out .= '<input type="hidden" name="cn-latitude" />';
+					$out .= '<input type="hidden" name="cn-longitude" />';
+					$out .= '<input type="hidden" name="cn-radius" value="10" />';
+					$out .= '<input type="hidden" name="cn-unit" value="mi" />';
 					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="start_search" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
 	
 				$out .= '</form>';
