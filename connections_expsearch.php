@@ -15,6 +15,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$this->loadConstants();
 			if ( !is_admin() ) add_action( 'plugins_loaded', array(&$this, 'start') );
 			//if ( !is_admin() ) add_action( 'wp_print_scripts', array(&$this, 'loadScripts') );
+			if ( !is_admin() ) add_action( 'wp_js_scripts', array(&$this, 'loadJs') );
 		}
 		
 		public function start() {
@@ -24,7 +25,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			require_once(dirname( __FILE__ ) . '/includes/class.template-parts-extended.php');//temp correct later
 			
 			add_action( 'wp_print_styles', array( $this, 'loadStyles' ) );
-			wp_enqueue_script( 'cn-form-ui-user' , CNEXSCH_BASE_URL . 'js/cn-expsearch.js', array('jquery') , CNEXSCH_CURRENT_VERSION , TRUE );
+			
 			
 			if (isset($_POST['start_search'])) {// Check if option save is performed
 				add_filter('the_content', array( $this, 'doSearch' ));
@@ -59,6 +60,15 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			
 			return $permittedAtts;
 		}
+
+		public function loadJs(){
+			if ( ! is_admin() )wp_enqueue_script( 'cn-form-ui-user' , CNEXSCH_BASE_URL . 'js/cn-expsearch.js', array('jquery') , CNEXSCH_CURRENT_VERSION , TRUE );	
+			
+		}
+
+
+
+
 
 		public function doSearch() {
 			global $post,$connections;
