@@ -403,10 +403,12 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					}
 
 					if(in_array('keywords',$visiblefields)){
+						$out .= '<div>';
 						$out .= '<label for="cn-s"><strong>Keywords:</strong></label><br/>';
 						$out .= '<span class="cn-search" style="width:50%; display:inline-block">';
 							$out .= '<input type="text" id="cn-search-input" name="cn-keyword" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
 						$out .= '</span>';
+						$out .= '<hr/></div>';
 					}
 					
 					if($use_geolocation){
