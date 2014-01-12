@@ -413,12 +413,12 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					
 					if($use_geolocation){
 						$out .= '<h2 ><a id="mylocation" style="" class="button" hidefocus="true" href="#">Search near my location</a></h2>';
+						$out .= '<input type="hidden" name="cn-near_addr" />';
+						$out .= '<input type="hidden" name="cn-latitude" />';
+						$out .= '<input type="hidden" name="cn-longitude" />';
+						$out .= '<input type="hidden" name="cn-radius" value="10" />';
+						$out .= '<input type="hidden" name="cn-unit" value="mi" />';
 					}
-					$out .= '<input type="hidden" name="cn-near_addr" />';
-					$out .= '<input type="hidden" name="cn-latitude" />';
-					$out .= '<input type="hidden" name="cn-longitude" />';
-					$out .= '<input type="hidden" name="cn-radius" value="10" />';
-					$out .= '<input type="hidden" name="cn-unit" value="mi" />';
 					$out .=  '<hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="start_search" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/>' . "\n";
 	
 				$out .= '</form>';
