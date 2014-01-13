@@ -218,71 +218,79 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			
 			//var_dump($categories);
 			//die();
-			
-			$out .= '<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
-				<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-					
-					<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-2">Listings</a></li>
-					<li class="ui-state-default ui-corner-top"><a href="#tabs-1">Map</a></li>
-				</ul>
-			
-				<div id="tabs-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-			';
-			
-			
+
 			$results = $connections->retrieve->entries( $permittedAtts );
 			
-			$markers = new stdClass();
-			$markers->markers=array();
-			foreach($results as $entry){
-				$entryObj=new stdClass();
-				$entryObj->id=$entry->id;
-				$entryObj->title= $entry->organization;
-				$entryObj->position=new stdClass();
-				$addy = unserialize ($entry->addresses);
-				$array = (array) $addy;
-				$addy = array_pop($addy);
-				if(!empty($addy['latitude']) && !empty($addy['longitude'])){
-					$entryObj->position->latitude=$addy['latitude'];
-					$entryObj->position->longitude=$addy['longitude'];
-					$markers->markers[]= $entryObj;
-				}
-			}
+			if(!empty($results)){
 			
-			$markerJson=json_encode($markers);
 			
-				if($permittedAtts['category']==NULL){
-					$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
-					foreach($categories as $cat){
-						$permittedAtts['category']=$cat->term_id;
-						$catblock = connectionsList( $permittedAtts,NULL,'connections' );;
-						//var_dump($catblock);
-						if(!empty($catblock) && strpos($catblock,'No results')===false){
-							$out .= '<h3>'.$state.$cat->name.'</h3>';
-							$out .= '<div class="accordion">';
-							$out .= $catblock;
-							$out .= '</div>';
-						}
+				$markers = new stdClass();
+				$markers->markers=array();
+				foreach($results as $entry){
+					$entryObj=new stdClass();
+					$entryObj->id=$entry->id;
+					$entryObj->title= $entry->organization;
+					$entryObj->position=new stdClass();
+					$addy = unserialize ($entry->addresses);
+					$array = (array) $addy;
+					$addy = array_pop($addy);
+					if(!empty($addy['latitude']) && !empty($addy['longitude'])){
+						$entryObj->position->latitude=$addy['latitude'];
+						$entryObj->position->longitude=$addy['longitude'];
+						$markers->markers[]= $entryObj;
 					}
-				}else{
-					$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
-					$category = $connections->retrieve->category($permittedAtts['category']);
-					$out .= '<h3>'.$state.$category->name.'</h3>';
-					$out .= '<div class="accordion">';
-					$out .= connectionsList( $permittedAtts,NULL,'connections' );
-					$out .= '</div>';
 				}
-
-			$out .='
-			</div>
-			<div id="tabs-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom ">
-				<h2>Hover on a point to find a business and click for more information</h2>
-			<div id="mapJson">'.$markerJson.'</div>
-			<div id="front_cbn_map" class="byState " rel="'.$_POST['cn-state'].'" style="width:100%;height:450px;"></div>
-			<div class="ui-widget-content ui-corner-bottom" style="padding:5px 15px;"><div id="data_display"></div><div style="clear:both;"></div></div>
-			</div>
-		</div>';
-			
+				$markerJson=json_encode($markers);
+	
+	
+				
+				$out .= '
+				<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+					<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+						
+						<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-2">Listings</a></li>
+						<li class="ui-state-default ui-corner-top"><a href="#tabs-1">Map</a></li>
+					</ul>
+				
+					<div id="tabs-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+					';
+					if($permittedAtts['category']==NULL){
+						$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
+						foreach($categories as $cat){
+							$permittedAtts['category']=$cat->term_id;
+							$catblock = $connections->shortcode->connectionsList( $permittedAtts,NULL,'connections' );;
+							//var_dump($catblock);
+							if(!empty($catblock) && strpos($catblock,'No results')===false){
+								$out .= '<h3>'.$state.$cat->name.'</h3>';
+								$out .= '<div class="accordion">';
+								$out .= $catblock;
+								$out .= '</div>';
+							}
+						}
+					}else{
+						$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
+						$category = $connections->retrieve->category($permittedAtts['category']);
+						$out .= '<h3>'.$state.$category->name.'</h3>';
+						$out .= '<div class="accordion">';
+						$out .= connectionsList( $permittedAtts,NULL,'connections' );
+						$out .= '</div>';
+					}
+		
+					$out .='
+						</div>
+						<div id="tabs-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom ">
+							<h2>Hover on a point to find a business and click for more information</h2>
+							<div id="mapJson">'.$markerJson.'</div>
+							<div id="front_cbn_map" class="byState " rel="'.$_POST['cn-state'].'" style="width:100%;height:450px;"></div>
+							<div class="ui-widget-content ui-corner-bottom" style="padding:5px 15px;">
+								<div id="data_display"></div>
+								<div style="clear:both;"></div>
+							</div>
+						</div>
+					</div>';
+			}else{
+				$out = "No results";	
+			}
 			
 			
 			return $out;
@@ -369,14 +377,14 @@ if (!class_exists('connectionsExpSearchLoad')) {
 
 					if(in_array('category',$visiblefields)){
 						$out .= '<div>';
-						$out .= cnTemplatePartExended::flexSelect($connections->retrieve->categories(),array(
+						$out .= cnTemplatePartExended::flexSelect($connections->retrieve->categories(array('order'=>'parent ASC, name ASC')),array(
 							'type'            => 'select',
 							'group'           => FALSE,
 							'default'         => __('Select a category', 'connections'),
 							'label'           => __('Search by category', 'connections'),
 							'show_select_all' => TRUE,
 							'select_all'      => __('Any', 'connections'),
-							'show_empty'      => TRUE,
+							'show_empty'      => FALSE,
 							'show_count'      => FALSE,
 							'depth'           => 0,
 							'parent_id'       => array(),
