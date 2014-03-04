@@ -17,12 +17,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		public $settings;
 		public function __construct() {
 			$this->loadConstants();
-			add_action( 'plugins_loaded', array( $this , 'start' ) );
-		}
-		
-		public function start() {
-			
-			
+
 			add_filter('cn_list_atts_permitted', array(__CLASS__, 'expand_atts_permitted'));
 			/*
 			 * Register the settings tabs shown on the Settings admin page tabs, sections and fields.
