@@ -16,8 +16,9 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		public $options;
 		public $settings;
 		public function __construct() {
-			$this->loadConstants();
-
+			
+			self::defineConstants();
+			
 			add_filter('cn_list_atts_permitted', array(__CLASS__, 'expand_atts_permitted'));
 			/*
 			 * Register the settings tabs shown on the Settings admin page tabs, sections and fields.
@@ -41,15 +42,14 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				add_filter('the_content', array( $this, 'doSearch' ));
 			}
 		}
-		private function loadConstants() {
-
+		private function defineConstants() {
 			define( 'CNEXSCH_CURRENT_VERSION', '1.0.2' );
-
 			define( 'CNEXSCH_DIR_NAME', plugin_basename( dirname( __FILE__ ) ) );
 			define( 'CNEXSCH_BASE_NAME', plugin_basename( __FILE__ ) );
 			define( 'CNEXSCH_BASE_PATH', plugin_dir_path( __FILE__ ) );
 			define( 'CNEXSCH_BASE_URL', plugin_dir_url( __FILE__ ) );
 		}
+		
 		public function init() { }
 		/**
 		 * Called when running the wp_print_styles action.
