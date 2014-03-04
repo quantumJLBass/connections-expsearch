@@ -7,7 +7,10 @@ Version: 0.1
 Author: 
 Author URI: 
 */
-
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 if (!class_exists('connectionsExpSearchLoad')) {
 	class connectionsExpSearchLoad {
 		public $options;
