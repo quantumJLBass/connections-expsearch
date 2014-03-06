@@ -37,7 +37,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 
 			add_action( 'wp_print_styles', array( $this, 'loadStyles' ) );
 			add_action( 'init', array($this, 'loadJs') );
-			
+			add_filter('wp_head', array($this, 'add_cnexpsh_data'));
 			if (isset($_POST['start_search'])) {// Check if option save is performed
 				add_filter('the_content', array( $this, 'doSearch' ));
 			}
@@ -71,6 +71,15 @@ if (!class_exists('connectionsExpSearchLoad')) {
 
 		public function loadJs(){
 			if ( ! is_admin() )wp_enqueue_script( 'cn-expsearch' , CNEXSCH_BASE_URL . 'js/cn-expsearch.js', array('jquery') , CNEXSCH_CURRENT_VERSION , TRUE );
+			
+			
+			
+			
+			
+		}
+		// Add items to the footer
+		function add_cnexpsh_data() {
+			echo '<script type="text/javascript">var cn_search_form_url = "http://cbn.wsu.edu/wordpress/cbn-search/";</script>';
 		}
 
 		/**
