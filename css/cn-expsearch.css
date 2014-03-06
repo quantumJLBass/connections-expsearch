@@ -160,8 +160,26 @@
 	left: 0;
 	margin: 0 5%;
 	padding: 11px 15px;
-	position: absolute;
+	position: fixed;
 	width: 90%;
 }
+
+#close_alert{
+	position: absolute;
+	right: 14px;
+	top: 11px;	
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
