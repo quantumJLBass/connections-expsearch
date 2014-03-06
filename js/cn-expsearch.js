@@ -67,7 +67,10 @@
 							
 							$('body').append('<div id="location_alert">There are '+count+' Cougar businesses that are near you <a href="#" id="veiw_locations">Click to find veiw them.</a> <a href="#" id="close_alert">[x]</a></div>');
 							$('#location_alert').slideDown();
-							
+							$('#close_alert').off().on("click", function(e){
+								e.preventDefault();
+								$('#location_alert').slideUp();
+							});
 						}
 					});
 				},showError);
