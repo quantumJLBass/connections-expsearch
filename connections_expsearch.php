@@ -79,7 +79,15 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		}
 		// Add items to the footer
 		function add_cnexpsh_data() {
-			echo '<script type="text/javascript">var cn_search_form_url = "http://cbn.wsu.edu/wordpress/cbn-search/";</script>';
+			global $connections;
+			$homeID = $connections->settings->get( 'connections', 'connections_home_page', 'page_id' );
+			if ( in_the_loop() && is_page() ) {
+				$permalink = trailingslashit ( get_permalink() );
+			} else {
+				$permalink = trailingslashit ( get_permalink( $homeID ) );
+			}
+			echo '<script type="text/javascript">var cn_search_form_url = "'.$permalink.'";</script>';
+			
 		}
 
 		/**
