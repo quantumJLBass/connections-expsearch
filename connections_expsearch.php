@@ -87,7 +87,6 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				$permalink = trailingslashit ( get_permalink( $homeID ) );
 			}
 			echo '<script type="text/javascript">var cn_search_form_url = "'.$permalink.'";</script>';
-			
 		}
 
 		/**
