@@ -63,7 +63,7 @@
 						},
 						success: function(data, textStatus, jqXHR){
 							var count = $(data).find('.cn-entry').length;
-							alert("found "+count+" locations");
+							//alert("found "+count+" locations");
 							
 							$('body').append('<div id="location_alert">There are '+count+' Cougar businesses that are near you <a href="#">Click to find veiw them.</a> <a href="#">[x]</a></div>');
 							$('#location_alert').slideDown();
