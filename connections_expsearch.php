@@ -255,11 +255,11 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					}
 				}
 				$markerJson=json_encode($markers);
-	
+				$location_posted=isset($_POST['location_alert']) ? $_POST['location_alert'] : false;
 	
 				
 				$out .= '
-				<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+				<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all  '.($location_posted?"location_posted":"").'">
 					<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 						
 						<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-2">Listings</a></li>
