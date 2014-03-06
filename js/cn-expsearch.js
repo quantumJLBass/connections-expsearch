@@ -93,7 +93,7 @@
 				e.preventDefault();
 				getLocation();
 			});
-			if (navigator.geolocation){
+			if (navigator.geolocation && $('.location_posted').length<=0){
 				setup_location_alert();
 			}
 		}else{
