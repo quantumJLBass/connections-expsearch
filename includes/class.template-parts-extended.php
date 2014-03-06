@@ -56,7 +56,7 @@ class cnTemplatePartExended {
 		
         $out .= "\n" . '<select class="cn-cat-select " name="'.(($atts['type'] == 'multiselect') ? 'cn-cat[]' : 'cn-cat').'" ' 
 					. (($atts['type'] == 'multiselect') ? ' MULTIPLE ' : '') 
-					. (($atts['type'] == 'multiselect'  || $atts['onSelect']!=false ) ? '' : ' onchange="this.form.submit()" ') 
+					. (($atts['type'] == 'multiselect'  || $atts['onSelect']==false ) ? '' : ' onchange="this.form.submit()" ') 
 					. ' data-placeholder="' . esc_attr($atts['default']) . '" >';
         $out .= "\n" . '<option value=""></option>';
         if ($atts['show_select_all'])
