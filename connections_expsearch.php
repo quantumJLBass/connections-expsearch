@@ -256,10 +256,10 @@ if (!class_exists('connectionsExpSearchLoad')) {
 						$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
 						foreach($categories as $cat){
 							$permittedAtts['category']=$cat->term_id;
-							$catblock = $connections->shortcode->connectionsList( $permittedAtts,NULL,'connections' );;
+							$catblock = connectionsList( $permittedAtts,NULL,'connections' );
 							//var_dump($catblock);
 							if(!empty($catblock) && strpos($catblock,'No results')===false){
-								$out .= '<h3>'.$state.$cat->name.'</h3>';
+								$out .= '<h2>'.$state.$cat->name.'</h2>';
 								$out .= '<div class="accordion">';
 								$out .= $catblock;
 								$out .= '</div>';
@@ -268,7 +268,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					}else{
 						$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
 						$category = $connections->retrieve->category($permittedAtts['category']);
-						$out .= '<h3>'.$state.$category->name.'</h3>';
+						$out .= '<h2>'.$state.$category->name.'</h2>';
 						$out .= '<div class="accordion">';
 						$out .= connectionsList( $permittedAtts,NULL,'connections' );
 						$out .= '</div>';
