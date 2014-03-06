@@ -363,6 +363,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$use_geolocation = $connections->settings->get( 'connections_expsearch' , 'connections_expsearch_defaults' , 'use_geolocation' );
 			// switch out for a template that can be changed. ie: {$category_select}, {$state_dropdown} etc.
 			$out .= '<div id="cn-form-container">' . "\n";
+				$out .= '<input type="hidden" value="'.get_bloginfo('wpurl').'" name="wpurl">';
 				$out .= '<div id="cn-form-ajax-response"><ul></ul></div>' . "\n";
 				$out .= '<form id="cn-search-form" method="POST" enctype="multipart/form-data">' . "\n";
 	
