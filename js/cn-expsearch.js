@@ -9,7 +9,11 @@
 			}
 		}
 		function setPosition(position) {
-			$('#mylocation').closest('h2').html('Searching in a 50mi radius of your current location <a href="#" id="clearLocation"> ( [x] clear ) </a>');
+			
+			var radius = $('[name="cn-radius"]').val();
+			var unit = $('[name="cn-unit"]').val();
+			
+			$('#mylocation').closest('h2').html('<a href="#" id="clearLocation">[x] </a> Limited to a '+radius+''+unit+' radius of your location ');
 			$('[name="cn-latitude"]').val(position.coords.latitude);
 			$('[name="cn-longitude"]').val(position.coords.longitude);
 			$('#clearLocation').off().on('click',function(e){
@@ -18,7 +22,7 @@
 			});	
 		}
 		function clearPosition() {
-			$('#mylocation').closest('h2').html('<a id="mylocation" style="" hidefocus="true" href="#">Search near my location</a>');
+			$('#clearLocation').closest('h2').html('<a id="mylocation" style="" hidefocus="true" href="#">[-]</a> Search near my location');
 			$('[name="cn-latitude"]').val('');
 			$('[name="cn-longitude"]').val('');
 			$('#mylocation').off().on('click',function(e){
@@ -27,6 +31,7 @@
 				getLocation();
 			});	
 		}
+
 		function showError(error) {
 		  switch(error.code) {
 			case error.PERMISSION_DENIED:
