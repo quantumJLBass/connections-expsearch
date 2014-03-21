@@ -318,171 +318,65 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		 */
 		public function shortcode( $atts , $content = NULL ) {
 			global $connections;
-
-			$date = new cnDate();
-			$form = new cnFormObjects();
+			
+			//$date = new cnDate();
+			//$form = new cnFormObjects();
 			$convert = new cnFormatting();
 			$format =& $convert;
-			$entry = new cnEntry();
-			$out = '';
+			//$entry = new cnEntry();
 
 
+			$formObject = array();
 			
 			
 			$atts = shortcode_atts(
 				array(
-					'default_type'     => 'individual',
+					'default_type'		=> 'individual',
 					'show_label'		=> TRUE,
-					'select_type'      => TRUE,
-					'photo'            => FALSE,
-					'logo'             => FALSE,
-					'address'          => TRUE,
-					'phone'            => TRUE,
-					'email'            => TRUE,
-					'messenger'        => TRUE,
-					'social'           => TRUE,
-					'link'             => TRUE,
-					'anniversary'      => FALSE,
-					'birthday'         => FALSE,
-					'category'         => TRUE,
-					'rte'              => TRUE,
-					'bio'              => TRUE,
-					'notes'            => FALSE,
-					'str_contact_name' => __( 'Entry Name' , 'connections_form' ),
-					'str_bio'          => __( 'Biography' , 'connections_form' ),
-					'str_notes'        => __( 'Notes' , 'connections_form' )
+					'select_type'		=> TRUE,
+					'photo'				=> FALSE,
+					'logo'				=> FALSE,
+					'address'			=> TRUE,
+					'phone'				=> TRUE,
+					'email'				=> TRUE,
+					'messenger'			=> TRUE,
+					'social'			=> TRUE,
+					'link'				=> TRUE,
+					'anniversary'		=> FALSE,
+					'birthday'			=> FALSE,
+					'category'			=> TRUE,
+					'rte'				=> TRUE,
+					'bio'				=> TRUE,
+					'notes'				=> FALSE,
+					'str_contact_name'	=> __( 'Entry Name' , 'connections_form' ),
+					'str_bio'			=> __( 'Biography' , 'connections_form' ),
+					'str_notes'			=> __( 'Notes' , 'connections_form' )
 				), $atts );
 
+			$defaults = array(
+				'show_label' => TRUE
+			);
+		
+			$atts = wp_parse_args( $atts, $defaults );
 
-			/*
-			 * Convert some of the $atts values in the array to boolean.
-			 */
-			$convert->toBoolean($atts['select_type']);
-			$convert->toBoolean($atts['photo']);
-			$convert->toBoolean($atts['logo']);
-			$convert->toBoolean($atts['address']);
-			$convert->toBoolean($atts['phone']);
-			$convert->toBoolean($atts['email']);
-			$convert->toBoolean($atts['messenger']);
-			$convert->toBoolean($atts['social']);
-			$convert->toBoolean($atts['link']);
-			$convert->toBoolean($atts['anniversary']);
-			$convert->toBoolean($atts['birthday']);
-			$convert->toBoolean($atts['category']);
-			$convert->toBoolean($atts['rte']);
-			$convert->toBoolean($atts['bio']);
-			$convert->toBoolean($atts['notes']);
-			//$out .= var_dump($atts);
-
-
-			$visiblefields = $connections->settings->get( 'connections_expsearch' , 'connections_expsearch_defaults' , 'visiable_search_fields' );
-			$use_geolocation = $connections->settings->get( 'connections_expsearch' , 'connections_expsearch_defaults' , 'use_geolocation' );
-			// switch out for a template that can be changed. ie: {$category_select}, {$state_dropdown} etc.
-			$out .= '<div id="cn-form-container">' . "\n";
-				$out .= '<input type="hidden" value="'.get_bloginfo('wpurl').'" name="wpurl">';
-				$out .= '<div id="cn-form-ajax-response"><ul></ul></div>' . "\n";
-				$out .= '<form id="cn-search-form" method="POST" enctype="multipart/form-data">';
-	
-					$defaults = array(
-						'show_label' => TRUE
-					);
-			
-					$atts = wp_parse_args( $atts, $defaults );	
-					$searchValue = ( get_query_var('cn-s') ) ? get_query_var('cn-s') : '';
-
-					$sixLeftOpen = '<div class="six columns">';
-					$fourRightOpen = '<div class="push_two four columns">';
-
-					$out .= '<div class="row">';
-
-					$fieldCount = 0;
-					if(in_array('category',$visiblefields)){
-						$out .= $sixLeftOpen;
-						$out .= cnTemplatePartExended::flexSelect($connections->retrieve->categories(array('order'=>'parent ASC, name ASC')),array(
-							'type'            => 'select',
-							'group'           => FALSE,
-							'default'         => __('Select a category', 'connections'),
-							'label'           => __('Search by category', 'connections'),
-							'show_select_all' => TRUE,
-							'select_all'      => __('Any', 'connections'),
-							'show_empty'      => FALSE,
-							'show_count'      => FALSE,
-							'depth'           => 0,
-							'parent_id'       => array(),
-							'exclude'         => array(),
-							'return'          => TRUE,
-							'class'				=>'search-select'
-						));
-						$out .= '<hr/></div>';
-						$fieldCount++;
-					}
-					$out .= $fieldCount%2<1?'</div><div class="row">':'';
-					if(in_array('region',$visiblefields)){
-						$out .= $fieldCount%2 < 1 ? $sixLeftOpen : $fourRightOpen;
-						$out 			.= '<label class="search-select"><strong>Search by state:</strong></label><br/>';
-						$display_code 	= $connections->settings->get('connections_form', 'connections_form_preferences', 'form_preference_regions_display_code');
-						$out          	.= '<select name="cn-state" class="cn-state-select" id="cn-state" >';
-						$out 			.= '<option value="" selected >Any</option>';
-						foreach (cnOptions::getRegions() as $code => $regions) {
-							$lable = $display_code ? $code : $regions;
-							$out .= '<option value="' . $code . '" >' . $lable . '</option>';
-						}
-						$out .= '</select>';
-						$out .= '<hr/></div>';
-						$fieldCount++;
-					}
-					
-					$out .= $fieldCount%2<1?'</div><div class="row">':'';
-					if(in_array('country',$visiblefields)){
-						$out .= $fieldCount%2 < 1 ? $sixLeftOpen : $fourRightOpen;
-						$out 			.= '<label class="search-select"><strong>Search by country:</strong></label><br/>';
-						$display_code 	= $connections->settings->get('connections_form', 'connections_form_preferences', 'form_preference_countries_display_code');
-						$out          	.= '<select name="cn-country" class="cn-country-select" id="cn-country" >';
-						$out 			.= '<option value="" selected >Any</option>';
-						foreach (cnOptions::getCountries() as $code => $country) {
-							$lable = $display_code ? $code : $country;
-							$out .= '<option value="' . $code . '" >' . $lable . '</option>';
-						}
-						$out .= '</select>';
-						$out .= '<hr/></div>';
-						$fieldCount++;
-					}
-					$out .= '</div>';
-					
-					if(in_array('keywords',$visiblefields)){
-						$out .= '<div class="row"><div class="twelve columns">';
-						$out .= '<label for="cn-s"><strong>Keywords:</strong></label><br/>';
-						$out .= '<span class="cn-search" style="width:50%; display:inline-block">';
-							$out .= '<input type="text" id="cn-search-input" name="cn-keyword" value="' . esc_attr( $searchValue ) . '" placeholder="' . __('Search', 'connections') . '"/>';
-						$out .= '</span>';
-						$out .= '<hr/></div></div>';
-					}
-
-					if($use_geolocation){
-						$out .= '<div class="row"><div class="twelve columns">';
-						$out .= '<h2 ><a id="mylocation" style="" class="button" hidefocus="true" href="#">[-]</a> Search near my location</h2>';
-						$out .= '<input type="hidden" name="cn-near_addr" />';
-						$out .= '<input type="hidden" name="cn-latitude" />';
-						$out .= '<input type="hidden" name="cn-longitude" />';
-						$out .= '<input type="hidden" name="cn-radius" value="10" />';
-						$out .= '<input type="hidden" name="cn-unit" value="mi" />';
-						$out .= '</div></div>';
-					}
-					$out .=  '<div class="row"><div class="twelve columns"><hr/><br/><p class="cn-add"><input class="cn-button-shell cn-button red" id="cn-form-search" type="submit" name="start_search" value="' . __('Submit' , 'connections_form' ) . '" /></p><br/></div></div>';
-					
-					
-				$out .= '</form>';
-			$out .= '</div>';
+			$formObject = $atts;
+			set_transient( "formObject", $formObject, 0 );	
+			ob_start();
+				if ( $overridden_template = locate_template( 'searchForm.php' ) ) {
+					// locate_template() returns path to file
+					// if either the child theme or the parent theme have overridden the template
+					load_template( $overridden_template );
+				} else {
+					// If neither the child nor parent theme have overridden the template,
+					// we load the template from the 'templates' sub-directory of the directory this file is in
+					load_template( dirname( __FILE__ ) . '/templates/searchForm.php' );
+				}
+				$out .= ob_get_contents();
+			ob_end_clean();				
 
 			// Output the the search input.
 			return $out;
-		}		
-		
-
-
-		
-
-
+		}
 	}
 
 
