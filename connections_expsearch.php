@@ -144,7 +144,6 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'options'   => $this->getSearchFields(),
 				'default'   => array('region','category','keyword')
 			);
-			
 			$fields[] = array(
 				'plugin_id' => 'connections_expsearch',
 				'id'        => 'unit',
@@ -156,7 +155,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'desc'      => '',
 				'help'      => '',
 				'type'      => 'select',
-				'options'   => array('mi'=>__('Miles', 'connections'),'km'=>__('Kilometre', 'connections')),
+				'options'   => $this->getUnitOptions(),
 				'default'   => array()
 			);			
 			$fields[] = array(
@@ -176,7 +175,15 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			return $fields;
 		}
 
-
+		//Note this is hard coded for the tmp need to finish a site
+		public function getUnitOptions(){
+			$options = array(
+				'mi'=>__('Miles', 'connections'),
+				'km'=>__('Kilometre', 'connections')
+			);
+			return $options;
+		}
+		
 		//Note this is hard coded for the tmp need to finish a site
 		public function getSearchFields(){
 			

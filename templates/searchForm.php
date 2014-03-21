@@ -6,8 +6,8 @@
 	$radius				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'radius' );
 	$unit				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'unit' );
 
-
-	$searchValue		= ( get_query_var('cn-s') ) ? get_query_var('cn-s') : '';	
+	$searchValue		= ( get_query_var('cn-s') ) ? get_query_var('cn-s') : '';
+	
 ?>
 
 <div id="cn-form-container">
