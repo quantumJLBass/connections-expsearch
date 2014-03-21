@@ -90,10 +90,11 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$radius				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'radius' );
 			$unit				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'unit' );			
 			$homeID 			= $connections->settings->get( 'connections', 'connections_home_page', 'page_id' );
-
+			$use_autoSearch		= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'use_autosearch' );
 			echo '
 			<script type="text/javascript">
-				var cn_search_use_geolocation = '.(bool)$use_geolocation.';
+				var cn_search_use_geolocation = '. ($use_geolocation?1:0).';
+				var cn_search_use_autosearch = '. ($use_autoSearch?1:0).';
 				var cn_search_form_url = "'.$permalink.'";
 				var cn_search_radius = "'.$radius.'";
 				var cn_search_unit = "'.$unit.'";
@@ -142,6 +143,19 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'type'      => 'checkbox',
 				'default'   => 1
 			);
+			$fields[] = array(
+				'plugin_id' => 'connections_expsearch',
+				'id'        => 'use_autosearch',
+				'position'  => 10,
+				'page_hook' => $settings,
+				'tab'       => 'search',
+				'section'   => 'connections_expsearch_exp_defaults',
+				'title'     => __('Use the auto geo location search service', 'connections_expsearch'),
+				'desc'      => __('NOTE: you can use css to configure your alert to match you site.', 'connections_expsearch'),
+				'help'      => __('', 'connections_expsearch'),
+				'type'      => 'checkbox',
+				'default'   => 1
+			);			
 			$fields[] = array(
 				'plugin_id' => 'connections_expsearch',
 				'id'        => 'visiable_search_fields',

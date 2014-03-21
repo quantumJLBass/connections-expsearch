@@ -1,15 +1,12 @@
 ( function(obj,document,$){
 	jQuery(document).ready(function ($) {
 		
-		
-		
-		
 		function getLocation(){
-			$('#mylocation').closest('h2').append('<span> (looking up now) </span>');
+			$('#mylocation').parent().append('<span> (looking up now) </span>');
 			if (navigator.geolocation){
 				navigator.geolocation.getCurrentPosition(setPosition,showError);
 			} else {
-				$('#mylocation').closest('h2').html("Geolocation is not supported by this browser.");
+				$('#mylocation').parent().html("Geolocation is not supported by this browser.");
 			}
 		}
 		function setPosition(position) {
@@ -17,7 +14,7 @@
 			var radius = $('[name="cn-radius"]').val();
 			var unit = $('[name="cn-unit"]').val();
 			
-			$('#mylocation').closest('h2').html('<a href="#" id="clearLocation">[x] </a> Limited to a '+radius+''+unit+' radius of your location ');
+			$('#mylocation').parent().html('<a href="#" id="clearLocation">[x] </a> Limited to a '+radius+''+unit+' radius of your location ');
 			$('[name="cn-latitude"]').val(position.coords.latitude);
 			$('[name="cn-longitude"]').val(position.coords.longitude);
 			$('#clearLocation').off().on('click',function(e){
@@ -26,7 +23,7 @@
 			});	
 		}
 		function clearPosition() {
-			$('#clearLocation').closest('h2').html('<a id="mylocation" style="" hidefocus="true" href="#">[-]</a> Search near my location');
+			$('#clearLocation').parent().html('<a id="mylocation" style="" hidefocus="true" href="#">[-]</a> Search near my location');
 			$('[name="cn-latitude"]').val('');
 			$('[name="cn-longitude"]').val('');
 			$('#mylocation').off().on('click',function(e){
@@ -39,16 +36,16 @@
 		function showError(error) {
 		  switch(error.code) {
 			case error.PERMISSION_DENIED:
-			  $('#mylocation').closest('h2').html("User denied the request for Geolocation.");
+			  $('#mylocation').parent().html("User denied the request for Geolocation.");
 			  break;
 			case error.POSITION_UNAVAILABLE:
-			  $('#mylocation').closest('h2').html("Location information is unavailable.");
+			  $('#mylocation').parent().html("Location information is unavailable.");
 			  break;
 			case error.TIMEOUT:
-			  $('#mylocation').closest('h2').html("The request to get user location timed out.");
+			  $('#mylocation').parent().html("The request to get user location timed out.");
 			  break;
 			case error.UNKNOWN_ERROR:
-			  $('#mylocation').closest('h2').html("An unknown error occurred.");
+			  $('#mylocation').parent().html("An unknown error occurred.");
 			  break;
 			}
 		}
@@ -106,9 +103,11 @@
 					e.preventDefault();
 					getLocation();
 				});
-				setup_location_alert();
+				if(cn_search_use_autosearch==1){
+					setup_location_alert();
+				}
 			}else{
-				$('#mylocation').closest('h2').remove();
+				$('#mylocation').parent().remove();
 			}
 		}
 		if($('#cn-state').length)$('#cn-state').chosen();
