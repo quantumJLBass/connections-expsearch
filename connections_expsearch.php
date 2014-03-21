@@ -74,7 +74,6 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				wp_enqueue_script( 'jquery-chosen-min' );
 				wp_enqueue_script( 'cn-expsearch' , CNEXSCH_BASE_URL . 'js/cn-expsearch.js', array('jquery') , CNEXSCH_CURRENT_VERSION , TRUE );
 			}
-			
 		}
 		// Add items to the footer
 		function add_cnexpsh_data() {
@@ -85,7 +84,20 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			} else {
 				$permalink = trailingslashit ( get_permalink( $homeID ) );
 			}
-			echo '<script type="text/javascript">var cn_search_form_url = "'.$permalink.'";</script>';
+
+
+			$use_geolocation	= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'use_geolocation' );
+			$radius				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'radius' );
+			$unit				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'unit' );			
+			$homeID 			= $connections->settings->get( 'connections', 'connections_home_page', 'page_id' );
+
+			echo '
+			<script type="text/javascript">
+				var cn_search_use_geolocation = '.(bool)$use_geolocation.';
+				var cn_search_form_url = "'.$permalink.'";
+				var cn_search_radius = "'.$radius.'";
+				var cn_search_unit = "'.$unit.'";
+			</script>';
 		}
 
 		/**
@@ -133,7 +145,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$fields[] = array(
 				'plugin_id' => 'connections_expsearch',
 				'id'        => 'visiable_search_fields',
-				'position'  => 50,
+				'position'  => 10.1,
 				'page_hook' => $settings,
 				'tab'       => 'search',
 				'section'   => 'connections_expsearch_exp_defaults',
@@ -147,7 +159,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$fields[] = array(
 				'plugin_id' => 'connections_expsearch',
 				'id'        => 'unit',
-				'position'  => 50,
+				'position'  => 10.2,
 				'page_hook' => $settings,
 				'tab'       => 'search',
 				'section'   => 'connections_expsearch_exp_defaults',
@@ -161,7 +173,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			$fields[] = array(
 				'plugin_id' => 'connections_expsearch',
 				'id'        => 'radius',
-				'position'  => 50,
+				'position'  => 10.3,
 				'page_hook' => $settings,
 				'tab'       => 'search',
 				'section'   => 'connections_expsearch_exp_defaults',
@@ -175,7 +187,10 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			return $fields;
 		}
 
-		//Note this is hard coded for the tmp need to finish a site
+		/*
+		* Get the units that the geo service can use
+		* returns array
+		*/
 		public function getUnitOptions(){
 			$options = array(
 				'mi'=>__('Miles', 'connections'),
@@ -197,6 +212,10 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			return $fields;
 		}
 
+		/*
+		* Do search action 
+		* returns string - The html of the search results
+		*/
 		public function doSearch() {
 			global $post,$connections;
 			$permittedAtts = array(

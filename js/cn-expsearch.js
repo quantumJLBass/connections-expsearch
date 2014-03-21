@@ -1,5 +1,9 @@
 ( function(obj,document,$){
 	jQuery(document).ready(function ($) {
+		
+		
+		
+		
 		function getLocation(){
 			$('#mylocation').closest('h2').append('<span> (looking up now) </span>');
 			if (navigator.geolocation){
@@ -51,10 +55,13 @@
 		
 		function setup_location_alert(){
 			//alert('I would have suggested something to you.');
-			navigator.geolocation.getCurrentPosition(function(Pos){
-				
-					$('body').append('<div id="location_alert">Finding deals near you ...</div>');
-					//var cn_search_form_url = "http://cbn.wsu.edu/wordpress/cbn-search/";
+			if (navigator.geolocation 
+				&& $('#cn-form').length<=0
+				&& $('.cn-template').length<=0
+				&& $('[rel="location_posted"]').length<=0
+				){
+				$('body').append('<div id="location_alert">Finding deals near you ...</div>');
+				navigator.geolocation.getCurrentPosition(function(Pos){
 					$.ajax({
 						type: "POST",
 						url: cn_search_form_url,
@@ -65,8 +72,8 @@
 							"cn-near_addr":"",
 							"cn-latitude":""+Pos.coords.latitude,
 							"cn-longitude":""+Pos.coords.longitude,
-							"cn-radius":"10",
-							"cn-unit":"mi",
+							"cn-radius":cn_search_radius,
+							"cn-unit":cn_search_unit,
 							"start_search":"Submit"
 						},
 						success: function(data, textStatus, jqXHR){
@@ -79,35 +86,30 @@
 								e.preventDefault();
 								$('#location_alert').slideUp();
 							});
-							var Form = '<form id="location_search_target" action="'+cn_search_form_url+'" enctype="multipart/form-data" method="POST" style="height:0px;width:0px; overflow:hidden;"><input type="hidden" name="location_alert" value="true"><input type="hidden" name="cn-cat"><input type="hidden" name="cn-state"><input type="hidden" name="cn-near_addr"><input type="hidden" name="cn-latitude" value="'+Pos.coords.latitude+'"><input type="hidden" name="cn-longitude" value="'+Pos.coords.longitude+'"><input type="hidden" name="cn-radius" value="10"><input type="hidden" name="cn-unit" value="mi"><input type="submit" name="start_search" value="Submit"></form>';
+							var Form = '<form id="location_search_target" action="'+cn_search_form_url+'" enctype="multipart/form-data" method="POST" style="height:0px;width:0px; overflow:hidden;"><input type="hidden" name="location_alert" value="true"><input type="hidden" name="cn-cat"><input type="hidden" name="cn-state"><input type="hidden" name="cn-near_addr"><input type="hidden" name="cn-latitude" value="'+Pos.coords.latitude+'"><input type="hidden" name="cn-longitude" value="'+Pos.coords.longitude+'"><input type="hidden" name="cn-radius" value="'+cn_search_radius+'"><input type="hidden" name="cn-unit" value="'+cn_search_unit+'"><input type="submit" name="start_search" value="Submit"></form>';
 							$('body').append(Form);
 							$('#veiw_locations').off().on("click", function(e){
 								e.preventDefault();
 								//$("#location_search_target").submit();
 								$("#location_search_target").find('[type="submit"]').trigger('click');
 							});
-							
-							
 						}
 					});
 				},showError);
-		}
-		
-		if( $('html').is($('.geolocation '))){
-			$('#mylocation').on('click',function(e){
-				//alert();
-				e.preventDefault();
-				getLocation();
-			});
-			if (navigator.geolocation 
-				&& $('#cn-form').length<=0
-				&& $('.cn-template').length<=0
-				&& $('[rel="location_posted"]').length<=0
-				){
-				setup_location_alert();
 			}
-		}else{
-			$('#mylocation').closest('h2').remove();
+		}
+
+		if( cn_search_use_geolocation == 1 ){
+			if( $('html').is($('.geolocation '))){
+				$('#mylocation').on('click',function(e){
+					//alert();
+					e.preventDefault();
+					getLocation();
+				});
+				setup_location_alert();
+			}else{
+				$('#mylocation').closest('h2').remove();
+			}
 		}
 		if($('#cn-state').length)$('#cn-state').chosen();
 		if($('#cn-country').length)$('#cn-country').chosen();
