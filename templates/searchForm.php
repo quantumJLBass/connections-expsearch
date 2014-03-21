@@ -1,10 +1,13 @@
 <?php
 	global $connections;
-	$atts = get_transient( "atts" );
-	$visiblefields = $connections->settings->get( 'connections_expsearch' , 'connections_expsearch_defaults' , 'visiable_search_fields' );
-	$use_geolocation = $connections->settings->get( 'connections_expsearch' , 'connections_expsearch_defaults' , 'use_geolocation' );
+	$atts				= get_transient( "atts" );
+	$visiblefields		= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'visiable_search_fields' );
+	$use_geolocation	= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'use_geolocation' );
+	$radius				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'radius' );
+	$unit				= $connections->settings->get( 'connections_expsearch' , 'exp_defaults' , 'unit' );
 
-	$searchValue = ( get_query_var('cn-s') ) ? get_query_var('cn-s') : '';	
+
+	$searchValue		= ( get_query_var('cn-s') ) ? get_query_var('cn-s') : '';	
 ?>
 
 <div id="cn-form-container">
@@ -39,26 +42,26 @@
 						<?php endif;?>		
 
 						<?php if(in_array('region',$visiblefields)):?>
-							<?php $display_code = $connections->settings->get('connections_form', 'connections_form_preferences', 'form_preference_regions_display_code'); ?> 
+							<?php $display_code = $connections->settings->get('connections_form', 'exp_defaults', 'form_preference_regions_display_code'); ?> 
 	
 							<label class="search-select"><strong><?=__('Search by state' , 'connections_form' )?>:</strong></label><br/>
 							<select name="cn-state" class="cn-state-select" id="cn-state" >
 								<option value="" selected ><?=__('Any' , 'connections_form' )?></option>
-								<?php foreach (cnOptions::getRegions() as $code => $regions):?>
-									<option value="<?=$code?>" ><?=($display_code ? $code : $regions)?></option>
+								<?php foreach( cnOptions::getRegions() as $code => $regions ):?>
+									<option value="<?=$code?>" ><?=( $display_code ? $code : $regions )?></option>
 								<?php endforeach; ?> 
 							</select>
 							<hr/>
 						<?php endif;?>						
 
 						<?php if(in_array('country',$visiblefields)):?>
-							<?php $display_code=$connections->settings->get('connections_form', 'connections_form_preferences', 'form_preference_countries_display_code'); ?> 
+							<?php $display_code = $connections->settings->get('connections_form', 'exp_defaults', 'form_preference_countries_display_code'); ?> 
 	
 							<label class="search-select"><strong><?=__('Search by country' , 'connections_form' )?>:</strong></label><br/>
 							<select name="cn-country" class="cn-country-select" id="cn-country" >
 								<option value="" selected ><?=__('Any' , 'connections_form' )?></option>
-								<?php foreach (cnOptions::getCountries() as $code => $country):?>
-									<option value="<?=$code?>" ><?=($display_code ? $code : $country)?></option>
+								<?php foreach( cnOptions::getCountries() as $code => $country ):?>
+									<option value="<?=$code?>" ><?=( $display_code ? $code : $country )?></option>
 								<?php endforeach; ?> 
 							</select>
 							<hr/>
@@ -90,8 +93,8 @@
 						<input type="hidden" name="cn-near_addr" />
 						<input type="hidden" name="cn-latitude" />
 						<input type="hidden" name="cn-longitude" />
-						<input type="hidden" name="cn-radius" value="10" />
-						<input type="hidden" name="cn-unit" value="mi" />
+						<input type="hidden" name="cn-radius" value="<?=$radius?>" />
+						<input type="hidden" name="cn-unit" value="<?=$unit?>" />
 					</div>
 				</div>
 			<?php endif;?>

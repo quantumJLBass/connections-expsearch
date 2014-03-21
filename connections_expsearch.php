@@ -104,9 +104,9 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			// Register the core setting sections.
 			$sections[] = array(
 				'tab'       => 'search' ,
-				'id'        => 'connections_expsearch_defaults' ,
-				'position'  => 20 ,
-				'title'     => __( 'Search defaults' , 'connections_expsearch' ) ,
+				'id'        => 'connections_expsearch_exp_defaults' ,
+				'position'  => 1 ,
+				'title'     => __( 'Expanded Search defaults' , 'connections_expsearch' ) ,
 				'callback'  => '' ,
 				'page_hook' => $settings );
 			return $sections;
@@ -123,7 +123,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'position'  => 10,
 				'page_hook' => $settings,
 				'tab'       => 'search',
-				'section'   => 'connections_expsearch_defaults',
+				'section'   => 'connections_expsearch_exp_defaults',
 				'title'     => __('Add geo location to the search', 'connections_expsearch'),
 				'desc'      => __('', 'connections_expsearch'),
 				'help'      => __('', 'connections_expsearch'),
@@ -136,7 +136,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'position'  => 50,
 				'page_hook' => $settings,
 				'tab'       => 'search',
-				'section'   => 'connections_expsearch_defaults',
+				'section'   => 'connections_expsearch_exp_defaults',
 				'title'     => __('Choose the visible on search form fields', 'connections_form'),
 				'desc'      => '',
 				'help'      => '',
@@ -144,6 +144,35 @@ if (!class_exists('connectionsExpSearchLoad')) {
 				'options'   => $this->getSearchFields(),
 				'default'   => array('region','category','keyword')
 			);
+			
+			$fields[] = array(
+				'plugin_id' => 'connections_expsearch',
+				'id'        => 'unit',
+				'position'  => 50,
+				'page_hook' => $settings,
+				'tab'       => 'search',
+				'section'   => 'connections_expsearch_exp_defaults',
+				'title'     => __('The default units for geo location service', 'connections_form'),
+				'desc'      => '',
+				'help'      => '',
+				'type'      => 'select',
+				'options'   => array('mi'=>__('Miles', 'connections'),'km'=>__('Kilometre', 'connections')),
+				'default'   => array()
+			);			
+			$fields[] = array(
+				'plugin_id' => 'connections_expsearch',
+				'id'        => 'radius',
+				'position'  => 50,
+				'page_hook' => $settings,
+				'tab'       => 'search',
+				'section'   => 'connections_expsearch_exp_defaults',
+				'title'     => __('The default Radius for geo location service', 'connections_form'),
+				'desc'      => '',
+				'help'      => '',
+				'type'      => 'text',
+				'default'   => '50'
+			);	
+			
 			return $fields;
 		}
 
@@ -152,24 +181,14 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		public function getSearchFields(){
 			
 			$fields = array(
-				'region'=>'Region',
-				'country'=>'Country',
-				'category'=>'Category',
-				'keywords'=>'Keywords'
+				'region'=>__('Region', 'connections'),
+				'country'=>__('Country', 'connections'),
+				'category'=>__('Category', 'connections'),
+				'keywords'=>__('Keywords', 'connections')
 			);
 			
 			return $fields;
 		}
-
-
-
-
-
-
-
-
-
-
 
 		public function doSearch() {
 			global $post,$connections;
