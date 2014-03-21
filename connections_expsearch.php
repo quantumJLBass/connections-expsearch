@@ -227,86 +227,20 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			}
 			
 			$out = '';
-			$categories = $connections->retrieve->categories();
-			$opSortbyCat=true;//would be an option
-			
-			//var_dump($categories);
-			//die();
 
 			$results = $connections->retrieve->entries( $permittedAtts );
-			
-			if(!empty($results)){
-			
-			
-				$markers = new stdClass();
-				$markers->markers=array();
-				foreach($results as $entry){
-					$entryObj=new stdClass();
-					$entryObj->id=$entry->id;
-					$entryObj->title= $entry->organization;
-					$entryObj->position=new stdClass();
-					$addy = unserialize ($entry->addresses);
-					$array = (array) $addy;
-					$addy = array_pop($addy);
-					if(!empty($addy['latitude']) && !empty($addy['longitude'])){
-						$entryObj->position->latitude=$addy['latitude'];
-						$entryObj->position->longitude=$addy['longitude'];
-						$markers->markers[]= $entryObj;
-					}
+			set_transient( "results", $results, 0 );	
+			set_transient( "atts", $permittedAtts, 0 );	
+			ob_start();
+				if ( $overridden_template = locate_template( 'searchResults.php' ) ) {
+					load_template( $overridden_template );
+				} else {
+					load_template( dirname( __FILE__ ) . '/templates/searchResults.php' );
 				}
-				$markerJson=json_encode($markers);
-				$location_posted=isset($_POST['location_alert']) ? $_POST['location_alert'] : false;
-	
-				
-				$out .= '
-				<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" rel="'.($location_posted?"location_posted":"").'">
-					<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-						
-						<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-2">Listings</a></li>
-						<li class="ui-state-default ui-corner-top"><a href="#tabs-1">Map</a></li>
-					</ul>
-				
-					<div id="tabs-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-					';
-					if($permittedAtts['category']==NULL){
-						$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
-						foreach($categories as $cat){
-							$permittedAtts['category']=$cat->term_id;
-							$catblock = connectionsList( $permittedAtts,NULL,'connections' );
-							//var_dump($catblock);
-							if(!empty($catblock) && strpos($catblock,'No results')===false){
-								$out .= '<h2>'.$state.$cat->name.'</h2>';
-								$out .= '<div class="accordion">';
-								$out .= $catblock;
-								$out .= '</div>';
-							}
-						}
-					}else{
-						$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
-						$category = $connections->retrieve->category($permittedAtts['category']);
-						$out .= '<h2>'.$state.$category->name.'</h2>';
-						$out .= '<div class="accordion">';
-						$out .= connectionsList( $permittedAtts,NULL,'connections' );
-						$out .= '</div>';
-					}
-		
-					$out .='
-					</div>
-					<div id="tabs-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom ">
-						<h2>Hover on a point to find a business and click for more information</h2>
-						<div id="mapJson">'.$markerJson.'</div>
-						<div id="front_cbn_map" class="byState " rel="'.$_POST['cn-state'].'" style="width:100%;height:450px;"></div>
-						<div class="ui-widget-content ui-corner-bottom" style="padding:5px 15px;">
-							<div id="data_display"></div>
-							<div style="clear:both;"></div>
-						</div>
-					</div>
-				</div>';
-			}else{
-				$out = "No results";	
-			}
-			
-			
+				$out .= ob_get_contents();
+			ob_end_clean();				
+
+			// Output the the search input.
 			return $out;
 		}
 		
@@ -318,17 +252,11 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		 */
 		public function shortcode( $atts , $content = NULL ) {
 			global $connections;
-			
-			//$date = new cnDate();
-			//$form = new cnFormObjects();
+
 			$convert = new cnFormatting();
 			$format =& $convert;
-			//$entry = new cnEntry();
-
-
 			$formObject = array();
-			
-			
+
 			$atts = shortcode_atts(
 				array(
 					'default_type'		=> 'individual',
@@ -363,12 +291,8 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			set_transient( "formObject", $formObject, 0 );	
 			ob_start();
 				if ( $overridden_template = locate_template( 'searchForm.php' ) ) {
-					// locate_template() returns path to file
-					// if either the child theme or the parent theme have overridden the template
 					load_template( $overridden_template );
 				} else {
-					// If neither the child nor parent theme have overridden the template,
-					// we load the template from the 'templates' sub-directory of the directory this file is in
 					load_template( dirname( __FILE__ ) . '/templates/searchForm.php' );
 				}
 				$out .= ob_get_contents();
@@ -390,21 +314,20 @@ if (!class_exists('connectionsExpSearchLoad')) {
 	 * @return mixed (object)|(bool)
 	 */
 	function connectionsExpSearchLoad() {
-			if ( class_exists('connectionsLoad') ) {
-					return new connectionsExpSearchLoad();
-			} else {
-					add_action(
-							'admin_notices',
-							 create_function(
-									 '',
-									'echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Connections must be installed and active in order use Connections Extended Search.</p></div>\';'
-									)
-					);
-					return FALSE;
-			}
+		if ( class_exists('connectionsLoad') ) {
+			return new connectionsExpSearchLoad();
+		} else {
+			add_action(
+				'admin_notices',
+				 create_function(
+					 '',
+					'echo \'<div id="message" class="error"><p><strong>ERROR:</strong> Connections must be installed and active in order use Connections Extended Search.</p></div>\';'
+				)
+			);
+			return FALSE;
+		}
 	}
-
-
+	
 	/**
 	 * Since Connections loads at default priority 10, and this extension is dependent on Connections,
 	 * we'll load with priority 11 so we know Connections will be loaded and ready first.
