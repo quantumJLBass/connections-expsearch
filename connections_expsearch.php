@@ -38,6 +38,11 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			add_action( 'wp_print_styles', array( $this, 'loadStyles' ) );
 			add_action( 'init', array($this, 'loadJs') );
 			add_filter('wp_head', array($this, 'add_cnexpsh_data'));
+			
+			add_action( 'cn_saved-entry', array( $this, 'clearCache' ) );
+			
+			
+			
 			if (isset($_POST['start_search'])) {// Check if option save is performed
 				add_filter('the_content', array( $this, 'doSearch' ));
 			}
@@ -68,6 +73,17 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			
 			return $permittedAtts;
 		}
+		
+		public function clearCache($instance){
+			$file = CN_IMAGE_PATH . "/tmps/id_${id}/";
+			if(file_exists($file)){	
+				$files = glob($file.'*');
+				foreach($files as $filename){
+					unlink($filename);
+				}
+			}
+		}
+
 
 		public function loadJs(){
 			if ( ! is_admin() ){ 
