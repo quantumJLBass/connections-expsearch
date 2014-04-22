@@ -39,8 +39,9 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			add_action( 'init', array($this, 'loadJs') );
 			add_filter('wp_head', array($this, 'add_cnexpsh_data'));
 			
-			add_action( 'cn_saved-entry', array( $this, 'clearCache' ) );
-			
+			if (isset($_POST)){
+				add_action( 'cn_updated-entry', array(__CLASS__, 'clearCache' ) );
+			}
 			
 			
 			if (isset($_POST['start_search'])) {// Check if option save is performed
@@ -74,7 +75,8 @@ if (!class_exists('connectionsExpSearchLoad')) {
 			return $permittedAtts;
 		}
 		
-		public function clearCache($instance){
+		public static function clearCache($instance){
+			$id=$instance->getId();
 			$file = CN_IMAGE_PATH . "/tmps/id_${id}/";
 			if(file_exists($file)){	
 				$files = glob($file.'*');

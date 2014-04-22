@@ -48,7 +48,9 @@
 				$catblocks = array();
 				foreach($results as $result){
 					$id = $result->id;
-					$file= "/tmps/id/${id}_${cat_id}.tmp";
+					$basedir = CN_IMAGE_PATH . "/tmps/id_${id}/";
+					if(!file_exists($basedir)) mkdir($basedir,0777,true);
+					$file= $basedir."${id}_${cat_id}.tmp";
 					if(!file_exists($file)){							
 						$atts['id'] = $result->id;
 						$block = connectionsList( $atts,NULL,'connections' );
