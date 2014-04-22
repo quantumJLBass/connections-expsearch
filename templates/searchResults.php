@@ -42,11 +42,20 @@
 		<?php if($atts['category']==NULL){
 			$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
 			foreach($categories as $cat){
-				$atts['category']=$cat->term_id;
+				$cat_id=$cat->term_id;
+				$atts['category']=$cat_id;
+				
 				$catblocks = array();
 				foreach($results as $result){
-					$atts['id'] = $result->id;
-					$block = connectionsList( $atts,NULL,'connections' );
+					$id = $result->id;
+					$file= "/tmps/id/${id}_${cat_id}.tmp";
+					if(!file_exists($file)){							
+						$atts['id'] = $result->id;
+						$block = connectionsList( $atts,NULL,'connections' );
+						file_put_contents($file, $block, LOCK_EX);
+					}else{
+						$block = file_get_contents($file);
+					}
 					if(!empty($block) && strpos($block,'No results')===false){
 						$catblocks[] = $block;
 					}
