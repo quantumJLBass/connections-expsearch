@@ -45,7 +45,7 @@
 				$cat_id=$cat->term_id;
 				$atts['category']=$cat_id;
 				
-				$cat_basedir = CN_IMAGE_PATH . "/tmps/cats/id_${cat_id}/";
+				$cat_basedir = CN_IMAGE_PATH . "/tmps/cats/${cat_id}/";
 				if(!file_exists($cat_basedir)) mkdir($cat_basedir,0777,true);
 				
 				
@@ -60,10 +60,13 @@
 						$id = $result->id;
 						$basedir = CN_IMAGE_PATH . "/tmps/id/${id}/";
 						if(!file_exists($basedir)) mkdir($basedir,0777,true);
-						$file= $basedir."${id}_${cat_id}.tmp";
+						$file= $basedir."${id}_${cat_id}_${state}.tmp";
 						if(!file_exists($file)){							
 							$atts['id'] = $result->id;
 							$block = connectionsList( $atts,NULL,'connections' );
+							if(strpos($block,'No results')!==false){
+								$block="";
+							}
 							file_put_contents($file, $block, LOCK_EX);
 						}else{
 							$block = file_get_contents($file);
@@ -82,34 +85,34 @@
 							<?php
 							$e=0;
 							
-							$resulting="";
+							$mem_resulting="";
 							foreach($catblocks as $catblock){
 								if(strpos($catblock,'<input type="hidden" name="cnlevel" value="member"/>')>0){	
 									$e++;			
-									$resulting .= $catblock;
+									$mem_resulting .= $catblock;
 								}
 							}
 							
 							if($e>0){
 								?><h4>CBN Members</h4><?php
 								?><div class="accordion"><?php
-									echo $resulting;
+									echo $mem_resulting;
 								?></div><?php
 							}
 							//CBN Affiliates
 							$e=0;
-							$resulting="";
+							$aff_resulting="";
 							foreach($catblocks as $catblock){
 								if(strpos($catblock,'<input type="hidden" name="cnlevel" value="member"/>')===false){	
 									$e++;			
-									$resulting .= $catblock;
+									$aff_resulting .= $catblock;
 								}
 	
 							}
 							if($e>0){
 								?><h4>CBN Affiliates</h4><?php
 								?><div class="accordion"><?php
-									echo $resulting;
+									echo $aff_resulting;
 								?></div><?php
 							}
 							?>
@@ -117,7 +120,9 @@
 					}
 					
 					$HTML = ob_get_clean();
-					
+					if(!empty($HTML) && strpos($HTML,'No results')===false){
+						$HTML = "";
+					}
 					file_put_contents($cat_file, $block, LOCK_EX);
 				}else{
 					$HTML = file_get_contents($cat_file);
