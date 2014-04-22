@@ -77,7 +77,7 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		
 		public static function clearCache($instance){
 			$id=$instance->getId();
-			$file = CN_IMAGE_PATH . "/tmps/id_${id}/";
+			$file = CN_IMAGE_PATH . "/tmps/id/${id}/";
 			if(file_exists($file)){	
 				$files = glob($file.'*');
 				foreach($files as $filename){

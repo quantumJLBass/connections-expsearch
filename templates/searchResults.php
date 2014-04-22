@@ -45,74 +45,84 @@
 				$cat_id=$cat->term_id;
 				$atts['category']=$cat_id;
 				
-				$catblocks = array();
-				foreach($results as $result){
-					$id = $result->id;
-					$basedir = CN_IMAGE_PATH . "/tmps/id_${id}/";
-					if(!file_exists($basedir)) mkdir($basedir,0777,true);
-					$file= $basedir."${id}_${cat_id}.tmp";
-					if(!file_exists($file)){							
-						$atts['id'] = $result->id;
-						$block = connectionsList( $atts,NULL,'connections' );
-						file_put_contents($file, $block, LOCK_EX);
-					}else{
-						$block = file_get_contents($file);
-					}
-					if(!empty($block) && strpos($block,'No results')===false){
-						$catblocks[] = $block;
-					}
-				}
+				$cat_basedir = CN_IMAGE_PATH . "/tmps/cats/id_${cat_id}/";
+				if(!file_exists($cat_basedir)) mkdir($cat_basedir,0777,true);
 				
-				if(count($catblocks)>0){
-					//var_dump($catblock);
+				
+				$cat_file= $cat_basedir."${cat_id}_${state}.tmp";
+				if(!file_exists($cat_file)){	
 					
-					?>
-					<h2><?=$state.$cat->name?></h2>
+					ob_start();
 					
-						<?php
-						$e=0;
-						ob_start();
+					
+					$catblocks = array();
+					foreach($results as $result){
+						$id = $result->id;
+						$basedir = CN_IMAGE_PATH . "/tmps/id/${id}/";
+						if(!file_exists($basedir)) mkdir($basedir,0777,true);
+						$file= $basedir."${id}_${cat_id}.tmp";
+						if(!file_exists($file)){							
+							$atts['id'] = $result->id;
+							$block = connectionsList( $atts,NULL,'connections' );
+							file_put_contents($file, $block, LOCK_EX);
+						}else{
+							$block = file_get_contents($file);
+						}
+						if(!empty($block) && strpos($block,'No results')===false){
+							$catblocks[] = $block;
+						}
+					}
+					
+					if(count($catblocks)>0){
+						//var_dump($catblock);
+						
+						?>
+						<h2><?=$state.$cat->name?></h2>
+						
+							<?php
+							$e=0;
 							
+							$resulting="";
 							foreach($catblocks as $catblock){
 								if(strpos($catblock,'<input type="hidden" name="cnlevel" value="member"/>')>0){	
 									$e++;			
-									echo $catblock;
+									$resulting .= $catblock;
 								}
 							}
-						$resulting = ob_get_clean();
-						if($e>0){
-							?><h4>CBN Members</h4><?php
-							?><div class="accordion"><?php
-								echo $resulting;
-							?></div><?php
-						}
-						//CBN Affiliates
-						$e=0;
-						ob_start();
 							
+							if($e>0){
+								?><h4>CBN Members</h4><?php
+								?><div class="accordion"><?php
+									echo $resulting;
+								?></div><?php
+							}
+							//CBN Affiliates
+							$e=0;
+							$resulting="";
 							foreach($catblocks as $catblock){
 								if(strpos($catblock,'<input type="hidden" name="cnlevel" value="member"/>')===false){	
 									$e++;			
-									echo $catblock;
+									$resulting .= $catblock;
 								}
 	
 							}
-						$resulting = ob_get_clean();
-						if($e>0){
-							?><h4>CBN Affiliates</h4><?php
-							?><div class="accordion"><?php
-								echo $resulting;
-							?></div><?php
-						}
-
-						?>
+							if($e>0){
+								?><h4>CBN Affiliates</h4><?php
+								?><div class="accordion"><?php
+									echo $resulting;
+								?></div><?php
+							}
+							?>
+						<?php	
+					}
 					
-					<?php
+					$HTML = ob_get_clean();
 					
-				}
-				
-				
-				
+					file_put_contents($cat_file, $block, LOCK_EX);
+				}else{
+					$HTML = file_get_contents($cat_file);
+				}	
+				echo $HTML;
 			}
 		}else{
 			$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
