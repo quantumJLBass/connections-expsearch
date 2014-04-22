@@ -120,10 +120,10 @@
 					}
 					
 					$HTML = ob_get_clean();
-					if(!empty($HTML) && strpos($HTML,'No results')===false){
+					if(strpos($HTML,'No results')!==false){
 						$HTML = "";
 					}
-					file_put_contents($cat_file, $block, LOCK_EX);
+					file_put_contents($cat_file, $HTML, LOCK_EX);
 				}else{
 					$HTML = file_get_contents($cat_file);
 				}	
