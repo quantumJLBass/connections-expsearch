@@ -8,26 +8,36 @@
 		echo __('No results' , 'connections_form' );
 		return;
 	}
-		
-	$markers = new stdClass();
-	$markers->markers=array();
-	foreach($results as $entry){
-		$entryObj=new stdClass();
-		$entryObj->id=$entry->id;
-		$entryObj->title= $entry->organization;
-		$entryObj->position=new stdClass();
-		$addy = unserialize ($entry->addresses);
-		$array = (array) $addy;
-		$addy = array_pop($addy);
-		if(!empty($addy['latitude']) && !empty($addy['longitude'])){
-			$entryObj->position->latitude=$addy['latitude'];
-			$entryObj->position->longitude=$addy['longitude'];
-			$markers->markers[]= $entryObj;
-		}
-	}
-	$markerJson=json_encode($markers);
+	
 	$location_posted=isset($_POST['location_alert']) ? $_POST['location_alert'] : false;
 	
+	$json_basedir = CN_IMAGE_PATH . "/tmps/json/";
+	if(!file_exists($json_basedir)) mkdir($json_basedir,0777,true);
+
+	$hash=md5(serialize($results));
+	$json_file= $json_basedir."${hash}.tmp";
+	if(!file_exists($json_file)){		
+		$markers = new stdClass();
+		$markers->markers=array();
+		foreach($results as $entry){
+			$entryObj=new stdClass();
+			$entryObj->id=$entry->id;
+			$entryObj->title= $entry->organization;
+			$entryObj->position=new stdClass();
+			$addy = unserialize ($entry->addresses);
+			$array = (array) $addy;
+			$addy = array_pop($addy);
+			if(!empty($addy['latitude']) && !empty($addy['longitude'])){
+				$entryObj->position->latitude=$addy['latitude'];
+				$entryObj->position->longitude=$addy['longitude'];
+				$markers->markers[]= $entryObj;
+			}
+		}
+		$markerJson=json_encode($markers);
+		file_put_contents($json_file, $markerJson, LOCK_EX);
+	}else{
+		$markerJson = file_get_contents($json_file);
+	}	
 	$out = "";
 		
 ?>
@@ -40,7 +50,8 @@
 
 	<div id="tabs-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 		<?php if($atts['category']==NULL){
-			$state = isset($_POST['cn-state']) && !empty($_POST['cn-state'])?$_POST['cn-state'].' and ':'';
+			$state = isset($_POST['cn-state']) ? $_POST['cn-state'] : "";
+			$state_message = !empty($state)?' in '.$state:'';
 			foreach($categories as $cat){
 				$cat_id=$cat->term_id;
 				$atts['category']=$cat_id;
@@ -80,7 +91,7 @@
 						//var_dump($catblock);
 						
 						?>
-						<h2><?=$state.$cat->name?></h2>
+						<h2><?=$cat->name.$state_message?></h2>
 						
 							<?php
 							$e=0;
