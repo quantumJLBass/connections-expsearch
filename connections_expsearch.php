@@ -76,7 +76,16 @@ if (!class_exists('connectionsExpSearchLoad')) {
 		}
 		
 		public static function clearCache($instance){
+			global $connections;
 			$id=$instance->getId();
+			
+			
+			$cats =$connections->retrieve->entryCategories( $id );
+			$catIds = array();
+			foreach($cats as $cat){
+				$catIds[]=$cat->term_id;
+			}
+
 			$file = CN_IMAGE_PATH . "/tmps/id/${id}/";
 			if(file_exists($file)){	
 				$files = glob($file.'*');
@@ -84,6 +93,24 @@ if (!class_exists('connectionsExpSearchLoad')) {
 					unlink($filename);
 				}
 			}
+			
+			$file = CN_IMAGE_PATH . "/tmps/json/";
+			if(file_exists($file)){	
+				$files = glob($file.'*');
+				foreach($files as $filename){
+					unlink($filename);
+				}
+			}
+			foreach($catIds as $catId){
+				$cat_file = CN_IMAGE_PATH . "/tmps/cats/${catId}/";
+				if(file_exists($cat_file)){	
+					$files = glob($cat_file.'*');
+					foreach($files as $filename){
+						unlink($filename);
+					}
+				}
+			}
+			
 		}
 
 
